@@ -5,4 +5,9 @@
     <string name="activity_label_login">Login</string>
     <string name="err_blank_user_name">User name is required</string>
     <string name="err_blank_password">Password is required</string>
+    <string name="err_user_password">Incorrect username/password.</string>
+    <string name="err_connect">No internet.</string>
+    <string name="err_socket">Taking too long to connect. Try again.</string>
+    <string name="err_no_res">No resource found to connect.</string>
+    <string name="err_api_others">Not able to connect. Try again.</string>
 </resources>
