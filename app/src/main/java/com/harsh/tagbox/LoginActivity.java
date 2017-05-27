@@ -6,9 +6,21 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 /**
  * A login screen that offers login via email/password.
@@ -17,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextInputLayout ilUserName;
     private TextInputLayout ilPassword;
+    private ArrayList<Call> apiCalls = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +60,33 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        Callback responseCallback = new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                removeCall(call);
+                handleApiFailure(e);
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                int resCode = response.code();
+                if (resCode == 200) {
+                    loginSuccess();
+                } else {
+                   handleApiFailure(resCode);
+                }
+                removeCall(call);
+            }
+        };
+
+        apiCalls.add(ApiController.login(userName, password, responseCallback));
+
+    }
+
+    private void removeCall(Call call) {
+        if (apiCalls.contains(call)) {
+            apiCalls.remove(call);
+        }
     }
 
     private boolean isValidCreds(String userName, String password) {
@@ -64,6 +103,49 @@ public class LoginActivity extends AppCompatActivity {
             ilPassword.setError(getString(R.string.err_blank_password));
         }
         return valid;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        for (Call apiCall : apiCalls) {
+            apiCall.cancel();
+        }
+    }
+
+    private void handleApiFailure(IOException e){
+        if (e instanceof ConnectException) {
+            showToast(R.string.err_connect);
+        } else if (e instanceof SocketException || e instanceof SocketTimeoutException) {
+            showToast(R.string.err_socket);
+        }
+    }
+
+    private void handleApiFailure(int code){
+        switch (code) {
+            case 400:
+                showToast(R.string.err_no_res);
+                break;
+            case 412:
+                showToast(R.string.err_user_password);
+                break;
+            default:
+                showToast(R.string.err_api_others);
+                break;
+        }
+    }
+
+    private void loginSuccess(){
+
+    }
+
+    private void showToast(final int id){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(LoginActivity.this, getString(id),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
 
