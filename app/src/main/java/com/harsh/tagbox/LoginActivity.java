@@ -1,6 +1,7 @@
 package com.harsh.tagbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginSuccess(){
-
+        startActivity(new Intent(this, Activity.class));
     }
 
     private void showToast(final int id){
