@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private ArrayList<Call> apiCalls = new ArrayList<>();
     public static final int GPS_REQUEST_CODE = 1223;
     public static final int GPS_ON_REQUEST_CODE = 1224;
+    public static final int REQUEST_CODE_SUCCESS_ACTIVITY = 1225;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private EditText etUserName;
@@ -184,7 +185,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void loginSuccess() {
-        startActivity(new Intent(this, Activity.class));
+        startActivityForResult(new Intent(this, Activity.class), REQUEST_CODE_SUCCESS_ACTIVITY);
     }
 
     private void showToast(final int id) {
@@ -349,8 +350,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == GPS_ON_REQUEST_CODE) {
-            googleApiClient.connect();
+        if (resultCode == Activity.RESULT_OK ) {
+           switch (requestCode){
+               case GPS_ON_REQUEST_CODE:
+                   googleApiClient.connect();
+                   break;
+               case REQUEST_CODE_SUCCESS_ACTIVITY:
+                   finish();
+                   break;
+           }
         }
     }
 
