@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
-    private void login(String userName, String password, Location loc) {
+    private void login(final String userName, String password, Location loc) {
 
         Callback responseCallback = new Callback() {
             @Override
@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 hideProgress();
                 int resCode = response.code();
                 if (resCode == 200) {
-                    loginSuccess();
+                    loginSuccess(userName);
                 } else {
                     handleApiFailure(resCode);
                 }
@@ -184,8 +184,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    private void loginSuccess() {
-        startActivityForResult(new Intent(this, Activity.class), REQUEST_CODE_SUCCESS_ACTIVITY);
+    private void loginSuccess(String userName) {
+        Intent i = new Intent(this, Activity.class);
+        i.putExtra("user_name", userName);
+        startActivityForResult(i, REQUEST_CODE_SUCCESS_ACTIVITY);
     }
 
     private void showToast(final int id) {
