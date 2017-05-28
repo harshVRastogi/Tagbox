@@ -280,7 +280,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         locationRequest = new LocationRequest();
         locationRequest.setFastestInterval(10000);
         locationRequest.setInterval(1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
 
