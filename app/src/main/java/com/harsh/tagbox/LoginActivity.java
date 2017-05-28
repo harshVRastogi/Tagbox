@@ -55,7 +55,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hideKeyboard(view);
-                login(etUserName.getText().toString(), etPassword.getText().toString());
+                showProgress(new Runnable() {
+                    @Override
+                    public void run() {
+                        login(etUserName.getText().toString(), etPassword.getText().toString());
+                    }
+                });
             }
         });
     }
@@ -69,17 +74,19 @@ public class LoginActivity extends AppCompatActivity {
         Callback responseCallback = new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                hideProgress();
                 removeCall(call);
                 handleApiFailure(e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                hideProgress();
                 int resCode = response.code();
                 if (resCode == 200) {
                     loginSuccess();
                 } else {
-                   handleApiFailure(resCode);
+                    handleApiFailure(resCode);
                 }
                 removeCall(call);
             }
@@ -119,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void handleApiFailure(IOException e){
+    private void handleApiFailure(IOException e) {
         if (e instanceof ConnectException) {
             showToast(R.string.err_connect);
         } else if (e instanceof SocketException || e instanceof SocketTimeoutException) {
@@ -127,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void handleApiFailure(int code){
+    private void handleApiFailure(int code) {
         switch (code) {
             case 400:
                 showToast(R.string.err_no_res);
@@ -141,18 +148,19 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void loginSuccess(){
+    private void loginSuccess() {
         startActivity(new Intent(this, Activity.class));
     }
 
-    private void showToast(final int id){
+    private void showToast(final int id) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(LoginActivity.this, getString(id),Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, getString(id), Toast.LENGTH_LONG).show();
             }
         });
     }
+
     public static void hideKeyboard(final View v) {
         if (v == null) {
             return;
@@ -167,5 +175,39 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    private static ProgressFragment progressFragment;
+
+    private void showProgress(final Runnable task) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (progressFragment == null) {
+                    progressFragment = ProgressFragment.newInstance();
+                    progressFragment.setRetainInstance(false);
+                }
+                progressFragment.setDialogStateListener(new ProgressFragment.DialogStateListener() {
+                    @Override
+                    public void onResume() {
+                        task.run();
+                    }
+                });
+                progressFragment.showProgress(getSupportFragmentManager());
+            }
+        });
+    }
+
+    private void hideProgress() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (progressFragment == null) {
+                    return;
+                }
+                progressFragment.dismiss();
+            }
+        });
+    }
+
 }
 
