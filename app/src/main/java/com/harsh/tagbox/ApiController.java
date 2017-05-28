@@ -1,6 +1,7 @@
 package com.harsh.tagbox;
 
 
+import android.location.Location;
 import android.os.AsyncTask;
 
 import java.util.concurrent.TimeUnit;
@@ -17,16 +18,16 @@ import okhttp3.RequestBody;
  * Created by Anjan on 5/27/2017.
  */
 public class ApiController {
-    public static final MediaType TYPE_TEXT =  MediaType.parse("text/plain; charset=utf-8");
+    public static final MediaType TYPE_TEXT = MediaType.parse("text/plain; charset=utf-8");
 
-    public static Call login(String userName, String password, Callback responseCallback) {
+    public static Call login(String userName, String password, Callback responseCallback, Location loc) {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
         clientBuilder.readTimeout(30, TimeUnit.SECONDS);
         clientBuilder.writeTimeout(30, TimeUnit.SECONDS);
 
-        RequestBody requestBody = RequestBody.create(TYPE_TEXT, getLoginReqBody(userName, password));
+        RequestBody requestBody = RequestBody.create(TYPE_TEXT, getLoginReqBody(userName, password, loc));
 
         Request request = new Request.Builder()
                 .post(requestBody)
@@ -59,12 +60,12 @@ public class ApiController {
         }
     }
 
-    private static String getLoginReqBody(String userName, String password){
+    private static String getLoginReqBody(String userName, String password, Location loc) {
         return "{"
-                    + "\"user\" : \""+userName+"\","
-                    + "\"pwd\" : \""+password+"\","
-                    + "\"loc\" : \"test\","
-                    + "\"timestamp\" : \""+String.valueOf(System.currentTimeMillis())+"\"" +
+                + "\"user\" : \"" + userName + "\","
+                + "\"pwd\" : \"" + password + "\","
+                + "\"loc\" : \"" + loc.getLatitude() + ", " + loc.getLongitude() + "\","
+                + "\"timestamp\" : \"" + String.valueOf(System.currentTimeMillis()) + "\"" +
                 "}";
     }
 
