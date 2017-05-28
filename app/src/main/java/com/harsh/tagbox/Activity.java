@@ -24,7 +24,7 @@ public class Activity extends AppCompatActivity {
         String userName = "";
         if(i.hasExtra("user_name")){
             userName = i.getStringExtra("user_name");
-            tv.setText("Welcome "+userName + "!");
+            tv.setText("Hello "+userName + "!");
         }
         notifyLogin(userName);
     }
