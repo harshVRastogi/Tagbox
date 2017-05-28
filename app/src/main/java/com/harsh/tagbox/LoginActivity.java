@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Login");
+        getSupportActionBar().setTitle("Login");
 
         etUserName = (EditText) findViewById(R.id.et_user_name);
         etPassword = (EditText) findViewById(R.id.et_password);
