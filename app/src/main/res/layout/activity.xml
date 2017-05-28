@@ -14,9 +14,9 @@
        android:layout_centerHorizontal="true"
        android:id="@+id/imageView" />
     <TextView
+        android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login successful!"
         android:textSize="28sp"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
